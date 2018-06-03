@@ -109,10 +109,6 @@ const COLUMN = [
   {t: [T.OPERATOR], v: [/ALL/], f: (s, t, i) => { if(i!==t.length-1) return t[i]; s.columns.push('*'); return null; }},
 ];
 
-function token(type, value) {
-  return {type, value};
-};
-
 function typeMatch(tkns, i, typ) {
   if(i+typ.length>tkns.length) return false;
   for(var j=0, J=typ.length; j<J; i++, j++)
