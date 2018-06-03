@@ -190,20 +190,8 @@ function process(tkns) {
   return z;
 };
 
-function tokenize(txt) {
-  var quo = null, y = '', z = [];
-  for(var c of txt) {
-    if((quo!=null && quo!=c) || /\w/.test(c)) { y += c; continue; }
-    if(y) { z.push(token(quo!=null? T.QUOTED:T.TEXT, y)); y = ''; }
-    if(/[\'\"\`]/.test(c)) quo = quo==null? c:null;
-    else if(/\S/g.test(c)) z.push(token(T.TEXT, c));
-  }
-  if(y) z.push(token(quo!=null? T.QUOTED:T.TEXT, y));
-  return z;
-};
-
 async function nlp(db, txt) {
-  var tkns = tokenize(txt);
+  var tkns = token.parse(txt);
   tkns = number(tkns);
   tkns = unit(tkns);
   tkns = reserved(tkns);
