@@ -190,7 +190,7 @@ function process(tkns) {
   return z;
 };
 
-async function nlp(db, txt) {
+async function english(db, txt) {
   var tkns = token.parse(txt);
   tkns = number(tkns);
   tkns = unit(tkns);
@@ -200,4 +200,4 @@ async function nlp(db, txt) {
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
   return process(tkns);
 };
-module.exports = nlp;
+module.exports = english;
