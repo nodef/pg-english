@@ -1,9 +1,9 @@
-const data = require('../../data');
-const number = require('./number');
-const unit = require('./unit');
-const reserved = require('./reserved');
-const entity = require('./entity');
-const T = require('./type');
+const token = require('@pg-english/token');
+const number = require('@pg-english/number');
+const unit = require('@pg-english/unit');
+const reserved = require('@pg-english/reserved');
+const entity = require('@pg-english/entity');
+const T = token.type;
 
 const NULLORDER = [
   {t: [T.KEYWORD, T.KEYWORD, T.ORDINAL], v: [/SELECT/, /NULL/, /1/], f: (s, t, i) => token(T.KEYWORD, 'NULLS FIRST')},
