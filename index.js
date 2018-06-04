@@ -147,50 +147,53 @@ function stageRun(stg, sta, tkns, rpt0=false, rpt1=false) {
   return z;
 };
 
-function stageRunAll(tkns) {
-  var sta = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false};
+function stageRunAll(tkns, opt={}) {
+  var s = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false};
   tkns = tkns.filter((t) => t.type!==T.SEPARATOR);
   if(tkns[0].value!=='SELECT') tkns.unshift(token(T.KEYWORD, 'SELECT'));
-  tkns = stageRun(NULLORDER, sta, tkns);
-  tkns = stageRun(NUMBER, sta, tkns);
-  tkns = stageRun(LIMIT, sta, tkns);
-  tkns = stageRun(VALUE, sta, tkns);
-  tkns = stageRun(EXPRESSION, sta, tkns, true, true);
-  tkns = stageRun(ORDERBY, sta, tkns, false, true);
-  tkns = stageRun(GROUPBY, sta, tkns, true);
-  tkns = stageRun(HAVING, sta, tkns);
-  tkns = stageRun(WHERE, sta, tkns);
-  tkns = stageRun(FROM, sta, tkns);
-  tkns = stageRun(COLUMN, sta, tkns);
-  if(sta.having.startsWith('AND ')) sta.having = sta.having.substring(4);
-  if(sta.where.startsWith('AND ')) sta.where = sta.where.substring(4);
-  var i = sta.columns.indexOf(`"*"`);
-  if(i>=0) sta.columns[i] = `*`;
-  if(sta.columns.length===0 || !sta.columns.includes('*')) {
-    for(var ord of sta.orderBy) {
+  tkns = stageRun(NULLORDER, s, tkns);
+  tkns = stageRun(NUMBER, s, tkns);
+  tkns = stageRun(LIMIT, s, tkns);
+  tkns = stageRun(VALUE, s, tkns);
+  tkns = stageRun(EXPRESSION, s, tkns, true, true);
+  tkns = stageRun(ORDERBY, s, tkns, false, true);
+  tkns = stageRun(GROUPBY, s, tkns, true);
+  tkns = stageRun(HAVING, s, tkns);
+  tkns = stageRun(WHERE, s, tkns);
+  tkns = stageRun(FROM, s, tkns);
+  tkns = stageRun(COLUMN, s, tkns);
+  if(s.having.startsWith('AND ')) s.having = s.having.substring(4);
+  if(s.where.startsWith('AND ')) s.where = s.where.substring(4);
+  var i = s.columns.indexOf(`"*"`);
+  if(i>=0) s.columns[i] = `*`;
+  if(s.columns.length===0 || !s.columns.includes('*')) {
+    for(var ord of s.orderBy) {
       var exp = ord.replace(/ (ASC|DESC)$/, '');
-      if(!sta.columns.includes(exp)) sta.columns.push(exp);
+      if(!s.columns.includes(exp)) s.columns.push(exp);
     }
   }
-  if(sta.groupBy.length===0 && (sta.columns.length===0 || !sta.columns.includes('*'))) {
-    for(var col of sta.columnsUsed)
-      if(!sta.columns.includes(col)) sta.columns.push(col);
+  if(s.groupBy.length===0 && (s.columns.length===0 || !s.columns.includes('*'))) {
+    for(var col of s.columnsUsed)
+      if(!s.columns.includes(col)) s.columns.push(col);
   }
-  for(var i=sta.groupBy.length-1; i>=0; i--)
-    sta.columns.unshift(sta.groupBy[i]);
-  if(sta.from.length===0) sta.from.push(`"food"`);
-  // if(data.table(sta.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(sta.columns.length===0) sta.columns.push('*'); }
-  else if(!sta.columns.includes('*') && !sta.columns.includes(`"name"`)) sta.columns.unshift(`"name"`);
-  var z = `SELECT ${sta.columns.join(', ')} FROM ${sta.from.join(', ')}`;
-  if(sta.where.length>0) z += ` WHERE ${sta.where}`;
-  if(sta.groupBy.length>0) z += ` GROUP BY ${sta.groupBy.join(', ')}`;
-  if(sta.orderBy.length>0) z += ` ORDER BY ${sta.orderBy.join(', ')}`;
-  if(sta.having.length>0) z += ` HAVING ${sta.having}`;
-  if(sta.limit>0) z += ` LIMIT ${sta.limit}`;
+  for(var i=s.groupBy.length-1; i>=0; i--)
+    s.columns.unshift(s.groupBy[i]);
+  if(s.from.length===0) s.from.push(`"${opt.table}"`);
+  // if(data.table(s.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(s.columns.length===0) s.columns.push('*'); }
+  if(s.from.includes(`"${opt.table}"`) && !s.columns.includes('*')) {
+    for(var col of opt.columns||[])
+      if(!s.columns.includes(col)) s.columns.unshift(col);
+  }
+  var z = `SELECT ${s.columns.join(', ')} FROM ${s.from.join(', ')}`;
+  if(s.where.length>0) z += ` WHERE ${s.where}`;
+  if(s.groupBy.length>0) z += ` GROUP BY ${s.groupBy.join(', ')}`;
+  if(s.orderBy.length>0) z += ` ORDER BY ${s.orderBy.join(', ')}`;
+  if(s.having.length>0) z += ` HAVING ${s.having}`;
+  if(s.limit>0) z += ` LIMIT ${s.limit}`;
   return z;
 };
 
-async function english(txt, fn, ths=null) {
+async function english(txt, fn, ths=null, opt={}) {
   var tkns = token.parse(txt);
   tkns = number.process(tkns);
   tkns = unit.process(tkns);
@@ -198,7 +201,7 @@ async function english(txt, fn, ths=null) {
   tkns = await entity.process(tkns, fn, ths);
   tkns = tkns.filter((v) => v.type!==T.TEXT || !/[~!@#$:,\?\.\|\/\\]/.test(v.value));
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
-  return stageRunAll(tkns);
+  return stageRunAll(tkns, opt);
 };
 english.token = token;
 english.number = number;

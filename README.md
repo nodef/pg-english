@@ -9,8 +9,14 @@ var english = require('pg-english');
 // english.unit(<text>): processed text
 // english.reserved(<text>): processed text
 // english.entity(<text>, <match fn>, [this]): Promise (processed text)
-// english(<text>, <match fn>, [this])
+// english(<text>, <match fn>, [this], [options])
 // -> Promise (processed text)
+
+// options: {
+//   table: undefined,  // default table: none
+//   columns: [],       // default columns: none
+// }
+
 
 function match(txts) {
   var z = null, txt = txts.join(' ');
@@ -19,5 +25,5 @@ function match(txts) {
   return Promise.resolve(z);
 };
 await english('show food with ascorbic acid less than twenty nine mg', match);
-// lemon has ASCORBIC ACID
+// SELECT "ASCORBIC ACID" FROM "FOOD" WHERE ("ASCORBIC ACID" < 0.029)
 ```
