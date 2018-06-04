@@ -147,7 +147,7 @@ function stageRun(stg, sta, tkns, rpt0=false, rpt1=false) {
   return z;
 };
 
-function process(tkns) {
+function stageRunAll(tkns) {
   var sta = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false};
   tkns = tkns.filter((t) => t.type!==T.SEPARATOR);
   if(tkns[0].value!=='SELECT') tkns.unshift(token(T.KEYWORD, 'SELECT'));
@@ -190,14 +190,19 @@ function process(tkns) {
   return z;
 };
 
-async function english(db, txt) {
+async function english(txt, fn, ths=null) {
   var tkns = token.parse(txt);
   tkns = number(tkns);
   tkns = unit(tkns);
   tkns = reserved(tkns);
-  tkns = await entity(db, tkns);
+  tkns = await entity(tkns, fn, ths);
   tkns = tkns.filter((v) => v.type!==T.TEXT || !/[~!@#$:,\?\.\|\/\\]/.test(v.value));
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
-  return process(tkns);
+  return stageRunAll(tkns);
 };
+english.token = token;
+english.number = number;
+english.unit = unit;
+english.reserved = reserved;
+english.entity = entity;
 module.exports = english;
