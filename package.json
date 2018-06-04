@@ -1,6 +1,6 @@
 {
   "name": "pg-english",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "English interface to PostgreSQL.",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/nodef/pg-english#readme",
   "dependencies": {
-    "@pg-english/entity": "0.0.2",
+    "@pg-english/entity": "^0.1.1",
     "@pg-english/number": "^0.1.8",
     "@pg-english/reserved": "^0.1.2",
     "@pg-english/token": "^0.1.8",
