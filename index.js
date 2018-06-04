@@ -179,7 +179,7 @@ function stageRunAll(tkns) {
   for(var i=sta.groupBy.length-1; i>=0; i--)
     sta.columns.unshift(sta.groupBy[i]);
   if(sta.from.length===0) sta.from.push(`"food"`);
-  if(data.table(sta.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(sta.columns.length===0) sta.columns.push('*'); }
+  // if(data.table(sta.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(sta.columns.length===0) sta.columns.push('*'); }
   else if(!sta.columns.includes('*') && !sta.columns.includes(`"name"`)) sta.columns.unshift(`"name"`);
   var z = `SELECT ${sta.columns.join(', ')} FROM ${sta.from.join(', ')}`;
   if(sta.where.length>0) z += ` WHERE ${sta.where}`;
@@ -192,10 +192,10 @@ function stageRunAll(tkns) {
 
 async function english(txt, fn, ths=null) {
   var tkns = token.parse(txt);
-  tkns = number(tkns);
-  tkns = unit(tkns);
-  tkns = reserved(tkns);
-  tkns = await entity(tkns, fn, ths);
+  tkns = number.process(tkns);
+  tkns = unit.process(tkns);
+  tkns = reserved.process(tkns);
+  tkns = await entity.process(tkns, fn, ths);
   tkns = tkns.filter((v) => v.type!==T.TEXT || !/[~!@#$:,\?\.\|\/\\]/.test(v.value));
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
   return stageRunAll(tkns);
