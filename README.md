@@ -14,6 +14,13 @@ var english = require('pg-english');
 // english(<text>, <match fn>, [this], [options])
 // -> Promise (processed text)
 
+// <match fn>(<texts>)
+// - texts: array of text
+// -> Promise {type, value, length}
+// - type: token type (table/column/row)
+// - value: token value
+// - length: token length (from start of texts)
+
 // options: {
 //   table: undefined,  // default table: none
 //   columns: [],       // default columns: none
@@ -29,3 +36,10 @@ function match(txts) {
 await english('show food with ascorbic acid less than twenty nine mg', match);
 // SELECT "ASCORBIC ACID" FROM "FOOD" WHERE ("ASCORBIC ACID" < 0.029)
 ```
+
+Methods:
+- [token](https://www.npmjs.com/package/@pg-english/token)
+- [number](https://www.npmjs.com/package/@pg-english/number)
+- [unit](https://www.npmjs.com/package/@pg-english/unit)
+- [reserved](https://www.npmjs.com/package/@pg-english/reserved)
+- [entity](https://www.npmjs.com/package/@pg-english/entity)
