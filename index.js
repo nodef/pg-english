@@ -177,6 +177,7 @@ function process(tkns, opt={}) {
   var s = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false, hints: null};
   tkns = tkns.filter(t => t.type!==T.SEPARATOR);
   s.hints = new Set(tkns.filter(t => t.hint!=null));
+  console.log('pg-english', s.hints);
   if(tkns[0].value!=='SELECT') tkns.unshift(token(T.KEYWORD, 'SELECT'));
   tkns = runStage(NULLORDER, s, tkns);
   tkns = runStage(NUMBER, s, tkns);
