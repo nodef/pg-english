@@ -179,7 +179,6 @@ function process(tkns, opt={}) {
   tkns = tkns.filter(t => t.type!==T.SEPARATOR);
   for(var tkn of tkns)
     if(tkn.hint!=null) s.hints.add(tkn.hint);
-  console.log('pg-english', s.hints);
   if(tkns[0].value!=='SELECT') tkns.unshift(token(T.KEYWORD, 'SELECT'));
   tkns = runStage(NULLORDER, s, tkns);
   tkns = runStage(NUMBER, s, tkns);
