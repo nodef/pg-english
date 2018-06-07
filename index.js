@@ -181,8 +181,7 @@ function stageRunAll(tkns, opt={}) {
   if(s.from.length===0) s.from.push(`"${opt.table}"`);
   // if(data.table(s.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(s.columns.length===0) s.columns.push('*'); }
   if(s.from.includes(`"${opt.table}"`) && !s.columns.includes('*')) {
-    for(var col of opt.columns||[])
-      if(!s.columns.includes(col)) s.columns.unshift(col);
+    Array.prototype.unshift.apply(s.columns, opt.columns||[]);
   }
   var z = `SELECT ${s.columns.join(', ')} FROM ${s.from.join(', ')}`;
   if(s.where.length>0) z += ` WHERE ${s.where}`;
