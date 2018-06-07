@@ -109,6 +109,12 @@ const COLUMN = [
   {t: [T.OPERATOR], v: [/ALL/], f: (s, t, i) => { if(i!==t.length-1) return t[i]; s.columns.push('*'); return null; }},
 ];
 
+function setAddAll(set, arr) {
+  for(var val of arr)
+    set.add(val);
+  return set;
+};
+
 function matchType(tkns, i, typ) {
   if(i+typ.length>tkns.length) return false;
   for(var j=0, J=typ.length; j<J; i++, j++)
@@ -147,6 +153,26 @@ function runStage(stg, sta, tkns, rpt0=false, rpt1=false) {
   return z;
 };
 
+function processColumns(s, opt={}) {
+  var cols = new Set(s.columns);
+  if(cols.has('"*"')) cols.add('*');
+  cols.delete('"*"');
+  if(cols.size===0 || !cols.has('*')) {
+    for(var ord of s.orderBy)
+      cols.add(ord.replace(/ (ASC|DESC)$/, ''));
+    for(var col of s.groupBy.length? []:s.columnsUsed)
+      cols.add(col);
+  }
+  var colt = new Set(s.groupBy);
+  if(!cols.has('*')) {
+    for(var hnt of s.hints)
+      if(hnt in opt.columns) setAddAll(colt, opt.columns);
+  }
+  setAddAll(colt, cols);
+  return Array.from(colt);
+  // if(data.table(s.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(s.columns.length===0) s.columns.push('*'); }
+};
+
 function process(tkns, opt={}) {
   var s = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false};
   tkns = tkns.filter((t) => t.type!==T.SEPARATOR);
@@ -164,25 +190,8 @@ function process(tkns, opt={}) {
   tkns = runStage(COLUMN, s, tkns);
   if(s.having.startsWith('AND ')) s.having = s.having.substring(4);
   if(s.where.startsWith('AND ')) s.where = s.where.substring(4);
-  var i = s.columns.indexOf(`"*"`);
-  if(i>=0) s.columns[i] = `*`;
-  if(s.columns.length===0 || !s.columns.includes('*')) {
-    for(var ord of s.orderBy) {
-      var exp = ord.replace(/ (ASC|DESC)$/, '');
-      if(!s.columns.includes(exp)) s.columns.push(exp);
-    }
-  }
-  if(s.groupBy.length===0 && (s.columns.length===0 || !s.columns.includes('*'))) {
-    for(var col of s.columnsUsed)
-      if(!s.columns.includes(col)) s.columns.push(col);
-  }
-  for(var i=s.groupBy.length-1; i>=0; i--)
-    s.columns.unshift(s.groupBy[i]);
   if(s.from.length===0) s.from.push(`"${opt.table}"`);
-  // if(data.table(s.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(s.columns.length===0) s.columns.push('*'); }
-  if(s.from.includes(`"${opt.table}"`) && !s.columns.includes('*')) {
-    Array.prototype.unshift.apply(s.columns, opt.columns||[]);
-  }
+  s.columns = processColumns(s, opt);
   var z = `SELECT ${s.columns.join(', ')} FROM ${s.from.join(', ')}`;
   if(s.where.length>0) z += ` WHERE ${s.where}`;
   if(s.groupBy.length>0) z += ` GROUP BY ${s.groupBy.join(', ')}`;

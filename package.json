@@ -1,6 +1,6 @@
 {
   "name": "pg-english",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "English interface to PostgreSQL.",
   "main": "index.js",
   "scripts": {
