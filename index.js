@@ -169,14 +169,16 @@ function processColumns(s, opt={}) {
       if(hnt in opt.columns||{}) setAddAll(colt, opt.columns[hnt]);
   }
   setAddAll(colt, cols);
+  if(colt.size===0) colt.add('*');
   return Array.from(colt);
   // if(data.table(s.from[0].replace(/\"/g, ''))!=='compositions_tsvector') { if(s.columns.length===0) s.columns.push('*'); }
 };
 
 function process(tkns, opt={}) {
-  var s = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false, hints: null};
+  var s = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false, hints: new Set()};
   tkns = tkns.filter(t => t.type!==T.SEPARATOR);
-  s.hints = new Set(tkns.filter(t => t.hint!=null));
+  for(var tkn of tkns)
+    if(tkn.hint!=null) s.hints.add(tkn.hint);
   console.log('pg-english', s.hints);
   if(tkns[0].value!=='SELECT') tkns.unshift(token(T.KEYWORD, 'SELECT'));
   tkns = runStage(NULLORDER, s, tkns);
