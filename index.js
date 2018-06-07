@@ -109,25 +109,25 @@ const COLUMN = [
   {t: [T.OPERATOR], v: [/ALL/], f: (s, t, i) => { if(i!==t.length-1) return t[i]; s.columns.push('*'); return null; }},
 ];
 
-function typeMatch(tkns, i, typ) {
+function matchType(tkns, i, typ) {
   if(i+typ.length>tkns.length) return false;
   for(var j=0, J=typ.length; j<J; i++, j++)
     if((tkns[i].type & 0xF0)!==(typ[j] & 0xF0) || ((typ[j] & 0xF)>0 && tkns[i].type!==typ[j])) return false;
   return true;
 };
 
-function valueMatch(tkns, i, val) {
+function matchValue(tkns, i, val) {
   for(var j=0, J=val.length; j<J; i++, j++)
     if(val[j]!=null && !val[j].test(tkns[i].value)) return false;
   return true;
 };
 
-function substageRun(sub, sta, tkns, rpt=false) {
+function runSubstage(sub, sta, tkns, rpt=false) {
   var z = tkns;
   do {
     var tkns = z, z = [];
     for(var i=0, I=tkns.length; i<I; i++) {
-      if(!typeMatch(tkns, i, sub.t) || !valueMatch(tkns, i, sub.v)) { z.push(tkns[i]); continue; }
+      if(!matchType(tkns, i, sub.t) || !matchValue(tkns, i, sub.v)) { z.push(tkns[i]); continue; }
       var ans = sub.f(sta, tkns, i), i = i+sub.t.length-1;
       if(ans==null) continue;
       else if(!Array.isArray(ans)) z.push(ans);
@@ -137,31 +137,31 @@ function substageRun(sub, sta, tkns, rpt=false) {
   return z;
 };
 
-function stageRun(stg, sta, tkns, rpt0=false, rpt1=false) {
+function runStage(stg, sta, tkns, rpt0=false, rpt1=false) {
   var z = tkns;
   do {
     var plen = tkns.length;
     for(var sub of stg)
-      z = substageRun(sub, sta, tkns=z, rpt0);
+      z = runSubstage(sub, sta, tkns=z, rpt0);
   } while(rpt1 && z.length<plen);
   return z;
 };
 
-function stageRunAll(tkns, opt={}) {
+function process(tkns, opt={}) {
   var s = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false};
   tkns = tkns.filter((t) => t.type!==T.SEPARATOR);
   if(tkns[0].value!=='SELECT') tkns.unshift(token(T.KEYWORD, 'SELECT'));
-  tkns = stageRun(NULLORDER, s, tkns);
-  tkns = stageRun(NUMBER, s, tkns);
-  tkns = stageRun(LIMIT, s, tkns);
-  tkns = stageRun(VALUE, s, tkns);
-  tkns = stageRun(EXPRESSION, s, tkns, true, true);
-  tkns = stageRun(ORDERBY, s, tkns, false, true);
-  tkns = stageRun(GROUPBY, s, tkns, true);
-  tkns = stageRun(HAVING, s, tkns);
-  tkns = stageRun(WHERE, s, tkns);
-  tkns = stageRun(FROM, s, tkns);
-  tkns = stageRun(COLUMN, s, tkns);
+  tkns = runStage(NULLORDER, s, tkns);
+  tkns = runStage(NUMBER, s, tkns);
+  tkns = runStage(LIMIT, s, tkns);
+  tkns = runStage(VALUE, s, tkns);
+  tkns = runStage(EXPRESSION, s, tkns, true, true);
+  tkns = runStage(ORDERBY, s, tkns, false, true);
+  tkns = runStage(GROUPBY, s, tkns, true);
+  tkns = runStage(HAVING, s, tkns);
+  tkns = runStage(WHERE, s, tkns);
+  tkns = runStage(FROM, s, tkns);
+  tkns = runStage(COLUMN, s, tkns);
   if(s.having.startsWith('AND ')) s.having = s.having.substring(4);
   if(s.where.startsWith('AND ')) s.where = s.where.substring(4);
   var i = s.columns.indexOf(`"*"`);
@@ -200,7 +200,7 @@ async function english(txt, fn, ths=null, opt={}) {
   tkns = await entity.process(tkns, fn, ths);
   tkns = tkns.filter((v) => v.type!==T.TEXT || !/[~!@#$:,\?\.\|\/\\]/.test(v.value));
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
-  return stageRunAll(tkns, opt);
+  return process(tkns, opt);
 };
 english.token = token;
 english.number = number;
