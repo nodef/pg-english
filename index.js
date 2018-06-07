@@ -166,7 +166,7 @@ function processColumns(s, opt={}) {
   var colt = new Set(s.groupBy);
   if(!cols.has('*')) {
     for(var hnt of s.hints)
-      if(hnt in opt.columns) setAddAll(colt, opt.columns);
+      if(hnt in opt.columns||{}) setAddAll(colt, opt.columns[hnt]);
   }
   setAddAll(colt, cols);
   return Array.from(colt);

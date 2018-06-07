@@ -19,11 +19,12 @@ var english = require('pg-english');
 // -> Promise {type, value, length}
 // - type: token type (table/column/row)
 // - value: token value
+// - hint: token hint (identifies table)
 // - length: token length (from start of texts)
 
 // options: {
-//   table: undefined,  // default table: none
-//   columns: [],       // default columns: none
+//   table: undefined,       // default table: none
+//   columns: {<table>: []}, // default columns per table: none
 // }
 
 
