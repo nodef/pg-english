@@ -2,7 +2,8 @@
 
 [![pg-english](https://i.imgur.com/UN74CCi.jpg)](https://npmjs.com/package/pg-english)
 
-English interface to PostgreSQL.
+Convert [english query] to [informal] [SQL SELECT].
+> NOTE: [pg-slang] can convert informal SQL to formal SQL.
 
 ```javascript
 var english = require('pg-english');
@@ -44,3 +45,9 @@ Methods:
 - [unit](https://www.npmjs.com/package/@pg-english/unit)
 - [reserved](https://www.npmjs.com/package/@pg-english/reserved)
 - [entity](https://www.npmjs.com/package/@pg-english/entity)
+
+
+[english query]: https://www.nexthink.com/blog/natural-language-interfaces-to-databases-nlidb/
+[informal]: https://www.npmjs.com/package/pg-slang
+[SQL SELECT]: https://www.postgresql.org/docs/10/static/sql-select.html
+[pg-slang]: https://www.npmjs.com/package/pg-slang
