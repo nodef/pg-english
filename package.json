@@ -1,7 +1,7 @@
 {
   "name": "pg-english",
-  "version": "0.1.10",
-  "description": "English interface to PostgreSQL.",
+  "version": "0.1.11",
+  "description": "Convert english query to informal SQL SELECT.",
   "main": "index.js",
   "scripts": {
     "test": "exit"
