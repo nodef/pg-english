@@ -56,7 +56,7 @@ const EXPRESSION = [
   {t: [T.KEYWORD, T.VALUE, T.OPERATOR, T.VALUE, T.BINARY, T.VALUE], v: [null, null, /OR|AND/, null, /[^(OR)|(AND)]/, null], f: (s, t, i) => i+6>=t.length? [t[i], token(T.BOOLEAN, `${t[i+1].value} ${t[i+4].value} ${t[i+5].value} AND ${t[i+3].value} ${t[i+4].value} ${t[i+4].value}`)]:t.slice(i, i+6)},
   {t: [T.EXPRESSION, T.BINARY, T.EXPRESSION], v: [null, /[^(OR)(AND)]/, null], f: (s, t, i) => token(T.BOOLEAN, `${t[i].value} ${t[i+1].value} ${t[i+2].value}`)},
   {t: [T.UNARY, T.EXPRESSION], v: [null, null], f: (s, t, i) => token(T.BOOLEAN, `${t[i].value} ${t[i+1].value}`)},
-  {t: [T.VALUE, T.BINARY, T.VALUE], v: [null, /AND/, null], f: (s, t, i) => { s.columnsUsed.push(t[i].value, t[i+2].value); return token(T.VALUE, `${t[i].value} + ${t[i+2].value}`); }},
+  {t: [T.VALUE, T.BINARY, T.VALUE], v: [null, /AND/, null], f: (s, t, i) => token(T.VALUE, `${t[i].value} + ${t[i+2].value}`)},
   {t: [T.BINARY, T.VALUE], v: [/AND/, null], f: (s, t, i) => { s.columnsUsed.push(t[i+1].value); return t[i+1]; }},
   {t: [T.EXPRESSION, T.BINARY, T.EXPRESSION], v: [null, null, null], f: (s, t, i) => token(T.BOOLEAN, `${t[i].value} ${t[i+1].value} ${t[i+2].value}`)},
 ];
