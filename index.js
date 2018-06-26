@@ -175,7 +175,6 @@ function processColumns(s, opt={}) {
 };
 
 function process(tkns, opt={}) {
-  console.log('tkns', tkns);
   var s = {columns: [], from: [], groupBy: [], orderBy: [], where: '', having: '', limit: 0, columnsUsed: [], reverse: false, hints: new Set()};
   tkns = tkns.filter(t => t.type!==T.SEPARATOR);
   for(var tkn of tkns)
@@ -213,7 +212,9 @@ async function english(txt, fn, ths=null, opt={}) {
   tkns = number.process(tkns);
   tkns = unit.process(tkns);
   tkns = reserved.process(tkns);
+  console.log('reserved', tkns);
   tkns = await entity.process(tkns, fn, ths);
+  console.log('entity', tkns);
   tkns = tkns.filter((v) => v.type!==T.TEXT || !/[~!@#$:,\?\.\|\/\\]/.test(v.value));
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
   return process(tkns, opt);
