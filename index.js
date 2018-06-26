@@ -184,11 +184,8 @@ function process(tkns, opt={}) {
   tkns = runStage(NUMBER, s, tkns);
   tkns = runStage(LIMIT, s, tkns);
   tkns = runStage(VALUE, s, tkns);
-  console.log('VALUE', tkns);
   tkns = runStage(EXPRESSION, s, tkns, true, true);
-  console.log('EXPRESSION', tkns);
   tkns = runStage(ORDERBY, s, tkns, false, true);
-  console.log('ORDERBY', tkns);
   tkns = runStage(GROUPBY, s, tkns, true);
   tkns = runStage(HAVING, s, tkns);
   tkns = runStage(WHERE, s, tkns);
@@ -208,17 +205,11 @@ function process(tkns, opt={}) {
 };
 
 async function english(txt, fn, ths=null, opt={}) {
-  console.log('txt', txt);
   var tkns = token.parse(txt);
-  console.log('parse', tkns);
   tkns = number.process(tkns);
-  console.log('number', tkns);
   tkns = unit.process(tkns);
-  console.log('unit', tkns);
   tkns = reserved.process(tkns);
-  console.log('reserved', tkns);
   tkns = await entity.process(tkns, fn, ths);
-  console.log('entity', tkns);
   tkns = tkns.filter((v) => v.type!==T.TEXT || !/[~!@#$:,\?\.\|\/\\]/.test(v.value));
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
   return process(tkns, opt);
