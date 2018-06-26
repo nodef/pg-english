@@ -208,9 +208,13 @@ function process(tkns, opt={}) {
 };
 
 async function english(txt, fn, ths=null, opt={}) {
+  console.log('txt', txt);
   var tkns = token.parse(txt);
+  console.log('parse', tkns);
   tkns = number.process(tkns);
+  console.log('number', tkns);
   tkns = unit.process(tkns);
+  console.log('unit', tkns);
   tkns = reserved.process(tkns);
   console.log('reserved', tkns);
   tkns = await entity.process(tkns, fn, ths);
