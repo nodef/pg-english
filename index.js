@@ -184,8 +184,11 @@ function process(tkns, opt={}) {
   tkns = runStage(NUMBER, s, tkns);
   tkns = runStage(LIMIT, s, tkns);
   tkns = runStage(VALUE, s, tkns);
+  console.log('VALUE', tkns);
   tkns = runStage(EXPRESSION, s, tkns, true, true);
+  console.log('EXPRESSION', tkns);
   tkns = runStage(ORDERBY, s, tkns, false, true);
+  console.log('ORDERBY', tkns);
   tkns = runStage(GROUPBY, s, tkns, true);
   tkns = runStage(HAVING, s, tkns);
   tkns = runStage(WHERE, s, tkns);
