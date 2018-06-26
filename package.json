@@ -1,6 +1,6 @@
 {
   "name": "pg-english",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Convert english query to informal SQL SELECT.",
   "main": "index.js",
   "scripts": {
@@ -29,10 +29,10 @@
   },
   "homepage": "https://github.com/nodef/pg-english#readme",
   "dependencies": {
-    "@pg-english/entity": "^0.1.5",
+    "@pg-english/entity": "^0.1.8",
     "@pg-english/number": "^0.1.8",
-    "@pg-english/reserved": "^0.1.2",
-    "@pg-english/token": "^0.1.8",
+    "@pg-english/reserved": "^0.1.4",
+    "@pg-english/token": "^0.1.10",
     "@pg-english/unit": "^0.1.1"
   }
 }
