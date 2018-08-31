@@ -1,6 +1,6 @@
 {
   "name": "pg-english",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "description": "Convert english query to informal SQL SELECT.",
   "main": "index.js",
   "scripts": {
