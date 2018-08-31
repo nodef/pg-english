@@ -181,7 +181,9 @@ function process(tkns, opt={}) {
     if(tkn.hint!=null) s.hints.add(tkn.hint);
   if(tkns[0].value!=='SELECT') tkns.unshift(token(T.KEYWORD, 'SELECT'));
   tkns = runStage(NULLORDER, s, tkns);
+  console.log('NULLORDER', JSON.stringify(tkns));
   tkns = runStage(NUMBER, s, tkns);
+  console.log('NUMBER', JSON.stringify(tkns));
   tkns = runStage(LIMIT, s, tkns);
   tkns = runStage(VALUE, s, tkns);
   tkns = runStage(EXPRESSION, s, tkns, true, true);
