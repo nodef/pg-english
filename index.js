@@ -206,13 +206,9 @@ function process(tkns, opt={}) {
 
 async function english(txt, fn, ths=null, opt={}) {
   var tkns = token.parse(txt);
-  console.log('token.parse', JSON.stringify(tkns));
   tkns = number.process(tkns);
-  console.log('number.process', JSON.stringify(tkns));
   tkns = unit.process(tkns);
-  console.log('unit.process', JSON.stringify(tkns));
   tkns = reserved.process(tkns);
-  console.log('reserved.process', JSON.stringify(tkns));
   tkns = await entity.process(tkns, fn, ths);
   tkns = tkns.filter((v) => v.type!==T.TEXT || !/[~!@#$:,\?\.\|\/\\]/.test(v.value));
   if(tkns.length>0 && (tkns[0].type & 0xF0)!==T.KEYWORD) tkns.unshift(token(T.KEYWORD, 'SELECT'));
